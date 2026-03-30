@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,8 +32,16 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             ),
-            ElevatedButton(onPressed: () {}, child: Text("Entrar")),
-            TextButton(onPressed: () {}, child: Text("Registrar")),
+            ElevatedButton(
+              onPressed: () => Navigator
+                .pushReplacementNamed(context, "/lista"),
+              child: Text("Entrar")
+            ),
+            TextButton(
+              onPressed: () => Navigator
+                .pushNamed(context, "/registro"),
+              child: Text("Registrar")
+            ),
           ],
         ),
       ),
