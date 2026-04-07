@@ -2,11 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RegistroPage extends StatelessWidget {
+  TextEditingController txtNome = TextEditingController();
+  TextEditingController txtEmail = TextEditingController();
+  TextEditingController txtSenha = TextEditingController();
+
   Future registrar(BuildContext context) async {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: 'a@b.com',
-      password: '123456',
+    var credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: txtEmail.text,
+      password: txtSenha.text,
     );
+
+    await credential.user?.updateDisplayName(txtNome.text);
+
+    txtNome.clear();
+    txtEmail.clear();
+    txtSenha.clear();
+
+    Navigator.of(context)
+      ..pop()
+      ..pushReplacementNamed('/lista');
   }
 
   @override
@@ -20,6 +34,7 @@ class RegistroPage extends StatelessWidget {
           children: [
             Container(width: 100, height: 100, child: Placeholder()),
             TextField(
+              controller: txtNome,
               // maxLength: 20,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -28,6 +43,7 @@ class RegistroPage extends StatelessWidget {
               ),
             ),
             TextField(
+              controller: txtEmail,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "E-mail",
@@ -35,6 +51,7 @@ class RegistroPage extends StatelessWidget {
               ),
             ),
             TextField(
+              controller: txtSenha,
               obscureText: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),

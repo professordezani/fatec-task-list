@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'task_model.dart';
 
@@ -8,11 +9,13 @@ class ListaPage extends StatelessWidget {
     TaskModel(id: '3', title: 'Task 3', checked: true)
   ];
 
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tasks"),
+        title: Text("Tasks de ${_auth.currentUser?.displayName}"),
         actions: [
           IconButton(
             onPressed: () => Navigator.pushReplacementNamed(context, "/login"),
