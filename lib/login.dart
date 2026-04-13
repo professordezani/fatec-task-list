@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatelessWidget {
+  TextEditingController txtEmail = TextEditingController();
+  TextEditingController txtSenha = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +15,7 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: .center,
           children: [
             TextField(
+              controller: txtEmail,
               decoration: InputDecoration(
                 // filled: true,
                 // fillColor: Colors.blue[50]
@@ -21,6 +25,7 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             TextField(
+              controller: txtSenha,
               obscureText: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -33,14 +38,27 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () => Navigator
-                .pushReplacementNamed(context, "/lista"),
-              child: Text("Entrar")
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: txtEmail.text,
+                    password: txtSenha.text,
+                  );
+                  Navigator.pushReplacementNamed(context, "/lista");
+                } on FirebaseAuthException catch (ex) {
+                  final snackBar = SnackBar(
+                    content: Text(ex.message!),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+              },
+              child: Text("Entrar"),
             ),
             TextButton(
-              onPressed: () => Navigator
-                .pushNamed(context, "/registro"),
-              child: Text("Registrar")
+              onPressed: () => Navigator.pushNamed(context, "/registro"),
+              child: Text("Registrar"),
             ),
           ],
         ),
