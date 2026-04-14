@@ -1,15 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'task_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ListaPage extends StatelessWidget {
-  final tasks = [
-    TaskModel(id: '1', title: 'Task 1', checked: true),
-    TaskModel(id: '2', title: 'Task 2'),
-    TaskModel(id: '3', title: 'Task 3', checked: true)
-  ];
-
   final _auth = FirebaseAuth.instance;
+  final _db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -27,21 +23,36 @@ class ListaPage extends StatelessWidget {
         onPressed: () => Navigator.pushNamed(context, "/novo"),
         child: Icon(Icons.add),
       ),
-      body: ListView(
-        children: [
-          for(var t in tasks)
-            Dismissible(
-              key: Key(t.id),
-              onDismissed: (_) {},
-              background: Container(color: Colors.red),
-              // secondaryBackground: Container(color: Colors.blue),
-              child: CheckboxListTile(
-                value: t.checked,
-                onChanged: (value) {},
-                title: Text(t.title),
-              ),
-            ),
-        ],
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: _db.collection('tasks').snapshots(),
+        builder: (context, s) {
+          if (!s.hasData) return CircularProgressIndicator();
+
+          if (s.hasError) return Text(s.error.toString());
+
+          final docs = s.data!.docs;
+
+          return ListView(
+            children: [
+              for (var t in docs)
+                Dismissible(
+                  key: Key(t.id),
+                  onDismissed: (_) {
+                    t.reference.delete();
+                  },
+                  background: Container(color: Colors.red),
+                  // secondaryBackground: Container(color: Colors.blue),
+                  child: CheckboxListTile(
+                    value: t['checked'],
+                    onChanged: (value) {
+                      t.reference.update({"checked": value});
+                    },
+                    title: Text(t['title']),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }
